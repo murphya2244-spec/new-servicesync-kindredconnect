@@ -15,7 +15,7 @@ import MySignups from './pages/MySignups';
 import AdminEvents from './pages/AdminEvents';
 import AdminEventForm from './pages/AdminEventForm';
 import AdminVolunteers from './pages/AdminVolunteers';
-import VolunteerProfile from './pages/VolunteerProfile';
+import VolunteerProfile from './pages/VolunteerProfile.jsx';
 import EventDetails from './pages/EventDetails';
 import AdminEventRoster from './pages/AdminEventRoster';
 import CalendarPage from './pages/CalendarPage';
