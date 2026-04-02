@@ -44,7 +44,13 @@ export default function MessagingPage() {
 
     const unsub = base44.entities.Message.subscribe((event) => {
       if (event.data?.channel === activeChannel.id) {
-        if (event.type === "create") setMessages(prev => [...prev, event.data]);
+        if (event.type === "create") {
+          setMessages(prev => {
+            // Avoid duplicate if we already have this id (optimistic or otherwise)
+            if (prev.some(m => m.id === event.data.id)) return prev;
+            return [...prev, event.data];
+          });
+        }
       }
     });
     return unsub;
@@ -55,17 +61,31 @@ export default function MessagingPage() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim() || !user) return;
+    const text = input.trim();
+    if (!text || !user) return;
     setSending(true);
-    await base44.entities.Message.create({
+    setInput("");
+    // Optimistically add message so it shows immediately
+    const optimistic = {
+      id: `tmp-${Date.now()}`,
+      channel: activeChannel.id,
+      sender_email: user.email,
+      sender_name: user.full_name,
+      content: text,
+      message_type: activeChannel.type,
+      created_date: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, optimistic]);
+    const saved = await base44.entities.Message.create({
       channel: activeChannel.id,
       channel_label: activeChannel.label,
       sender_email: user.email,
       sender_name: user.full_name,
-      content: input.trim(),
+      content: text,
       message_type: activeChannel.type
     });
-    setInput("");
+    // Replace optimistic with real saved message
+    setMessages(prev => prev.map(m => m.id === optimistic.id ? { ...optimistic, ...saved } : m));
     setSending(false);
   };
 

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AppLayout from "@/components/AppLayout";
+import EventDocumentExtractor from "@/components/EventDocumentExtractor";
 
 const defaultForm = {
   title: "",
@@ -97,6 +98,8 @@ export default function AdminEventForm() {
             <p className="text-muted-foreground text-sm">Fill in the event details below</p>
           </div>
         </div>
+
+        <EventDocumentExtractor onExtracted={(data) => setForm(prev => ({ ...prev, ...data, capacity: data.capacity ? String(data.capacity) : prev.capacity }))} />
 
         <Card className="border-border">
           <CardContent className="p-6">

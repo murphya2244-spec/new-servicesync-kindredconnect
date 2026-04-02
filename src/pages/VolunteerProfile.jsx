@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
+import VolunteerDocumentUpload from "@/components/VolunteerDocumentUpload";
 
 const SKILL_SUGGESTIONS = [
   "First Aid", "Teaching", "Cooking", "Driving", "Spanish", "French",
@@ -199,6 +200,9 @@ export default function VolunteerProfile() {
             </Select>
           </CardContent>
         </Card>
+
+        {/* Documents */}
+        <VolunteerDocumentUpload volunteerEmail={user?.email} />
 
         <Button onClick={handleSave} disabled={saving} className="w-full bg-primary hover:bg-primary/90 gap-2">
           <Save className="w-4 h-4" />

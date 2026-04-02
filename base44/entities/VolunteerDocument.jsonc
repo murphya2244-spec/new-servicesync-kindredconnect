@@ -1,0 +1,42 @@
+{
+  "name": "VolunteerDocument",
+  "type": "object",
+  "properties": {
+    "volunteer_email": {
+      "type": "string",
+      "description": "Email of the volunteer this document belongs to"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "certification",
+        "resume",
+        "identification",
+        "other"
+      ],
+      "description": "Type of document"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this document"
+    }
+  },
+  "required": [
+    "volunteer_email",
+    "document_type",
+    "file_url"
+  ],
+  "rls": {
+    "read": "admin",
+    "write": "owner",
+    "owner_field": "volunteer_email"
+  }
+}
