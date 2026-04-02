@@ -1,0 +1,49 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "volunteer"
+      ],
+      "default": "volunteer",
+      "description": "User role in the platform"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short bio or description"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Volunteer skills"
+    },
+    "availability": {
+      "type": "string",
+      "enum": [
+        "weekdays",
+        "weekends",
+        "both",
+        "flexible"
+      ],
+      "description": "General availability"
+    },
+    "total_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Total volunteer hours logged"
+    },
+    "profile_image_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    }
+  }
+}

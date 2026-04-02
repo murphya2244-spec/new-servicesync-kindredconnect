@@ -1,0 +1,41 @@
+{
+  "name": "Signup",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Reference to the Event"
+    },
+    "volunteer_email": {
+      "type": "string",
+      "description": "Email of the volunteer who signed up"
+    },
+    "volunteer_name": {
+      "type": "string",
+      "description": "Name of the volunteer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "attended"
+      ],
+      "default": "confirmed",
+      "description": "Signup status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Volunteer notes or special requests"
+    },
+    "hours_logged": {
+      "type": "number",
+      "description": "Hours logged after the event"
+    }
+  },
+  "required": [
+    "event_id",
+    "volunteer_email"
+  ]
+}
