@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Calendar, MapPin, Users, Search, Filter, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -207,15 +208,15 @@ export default function EventsPage() {
                       {full && <AlertCircle className="w-3.5 h-3.5" />}
                     </div>
                   )}
-                  <Button
-                    size="sm"
-                    className="w-full mt-3"
-                    disabled={joined || full}
-                    onClick={() => handleSignup(event)}
-                    variant={joined ? "secondary" : "default"}
-                  >
-                    {joined ? "Already Signed Up ✓" : full ? "Event Full" : "Sign Up"}
-                  </Button>
+                  <Link to={`/events/${event.id}`}>
+                    <Button
+                      size="sm"
+                      className="w-full mt-3"
+                      variant={joined ? "secondary" : "default"}
+                    >
+                      {joined ? "View Details ✓" : full ? "View Details" : "View & Sign Up"}
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             );
