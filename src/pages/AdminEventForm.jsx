@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Plus, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,8 @@ const defaultForm = {
   capacity: "",
   status: "upcoming",
   category: "other",
-  image_url: ""
+  image_url: "",
+  skills_needed: []
 };
 
 export default function AdminEventForm() {
@@ -27,6 +28,7 @@ export default function AdminEventForm() {
   const [user, setUser] = useState(null);
   const [form, setForm] = useState(defaultForm);
   const [saving, setSaving] = useState(false);
+  const [skillInput, setSkillInput] = useState("");
 
   // Check if editing existing event
   const urlParams = new URLSearchParams(window.location.search);
@@ -50,7 +52,8 @@ export default function AdminEventForm() {
             capacity: e.capacity || "",
             status: e.status || "upcoming",
             category: e.category || "other",
-            image_url: e.image_url || ""
+            image_url: e.image_url || "",
+            skills_needed: e.skills_needed || []
           });
         }
       }
@@ -71,6 +74,14 @@ export default function AdminEventForm() {
   };
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
+
+  const addSkill = (s) => {
+    const skill = s.trim();
+    if (!skill || form.skills_needed.includes(skill)) return;
+    set("skills_needed", [...form.skills_needed, skill]);
+    setSkillInput("");
+  };
+  const removeSkill = (skill) => set("skills_needed", form.skills_needed.filter(s => s !== skill));
 
   return (
     <AppLayout role="admin" user={user}>
@@ -155,6 +166,33 @@ export default function AdminEventForm() {
               <div className="space-y-1.5">
                 <Label htmlFor="image_url">Banner Image URL</Label>
                 <Input id="image_url" value={form.image_url} onChange={e => set("image_url", e.target.value)} placeholder="https://..." />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Skills Needed</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={skillInput}
+                    onChange={e => setSkillInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && (e.preventDefault(), addSkill(skillInput))}
+                    placeholder="e.g. First Aid, Driving..."
+                  />
+                  <Button type="button" variant="outline" onClick={() => addSkill(skillInput)}>
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {form.skills_needed.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {form.skills_needed.map(skill => (
+                      <span key={skill} className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2.5 py-1 rounded-full">
+                        {skill}
+                        <button type="button" onClick={() => removeSkill(skill)} className="hover:text-destructive">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 pt-2">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
-import { Plus, Calendar, Users, Pencil, Trash2, MoreVertical } from "lucide-react";
+import { Plus, Calendar, Users, Pencil, Trash2, MoreVertical, ClipboardList } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,6 +115,11 @@ export default function AdminEvents() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <Link to={`/admin/events/${event.id}/roster`}>
+                            <DropdownMenuItem>
+                              <ClipboardList className="w-4 h-4 mr-2" /> View Roster
+                            </DropdownMenuItem>
+                          </Link>
                           <Link to={`/admin/events/${event.id}`}>
                             <DropdownMenuItem>
                               <Pencil className="w-4 h-4 mr-2" /> Edit
