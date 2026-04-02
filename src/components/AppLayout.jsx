@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, UserCircle } from "lucide-react";
+import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, MessageSquare, BarChart2 } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const volunteerNav = [
   { label: "Dashboard", href: "/volunteer-dashboard", icon: Home },
   { label: "Events", href: "/events", icon: Calendar },
+  { label: "Calendar", href: "/calendar", icon: Calendar },
+  { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "My Sign-ups", href: "/my-signups", icon: Heart },
   { label: "My Profile", href: "/profile", icon: Settings },
 ];
@@ -15,7 +18,10 @@ const volunteerNav = [
 const adminNav = [
   { label: "Dashboard", href: "/admin-dashboard", icon: Home },
   { label: "Events", href: "/admin/events", icon: Calendar },
+  { label: "Calendar", href: "/calendar", icon: Calendar },
   { label: "Volunteers", href: "/admin/volunteers", icon: Users },
+  { label: "Messages", href: "/messages", icon: MessageSquare },
+  { label: "Analytics", href: "/admin/analytics", icon: BarChart2 },
 ];
 
 export default function AppLayout({ children, role, user }) {
@@ -62,6 +68,7 @@ export default function AppLayout({ children, role, user }) {
 
           {/* User */}
           <div className="flex items-center gap-2">
+            <NotificationBell userEmail={user?.email} />
             <div className="hidden sm:flex items-center gap-2 mr-1">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={user?.profile_image_url} />

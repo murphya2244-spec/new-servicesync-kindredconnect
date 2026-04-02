@@ -18,6 +18,9 @@ import AdminVolunteers from './pages/AdminVolunteers';
 import VolunteerProfile from './pages/VolunteerProfile';
 import EventDetails from './pages/EventDetails';
 import AdminEventRoster from './pages/AdminEventRoster';
+import CalendarPage from './pages/CalendarPage';
+import MessagingPage from './pages/MessagingPage';
+import AdminAnalytics from './pages/AdminAnalytics';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -51,6 +54,9 @@ const AuthenticatedApp = () => {
       <Route path="/admin/events/new" element={<AdminEventForm />} />
       <Route path="/admin/events/:id" element={<AdminEventForm />} />
       <Route path="/admin/events/:id/roster" element={<AdminEventRoster />} />
+      <Route path="/calendar" element={<CalendarPage />} />
+      <Route path="/messages" element={<MessagingPage />} />
+      <Route path="/admin/analytics" element={<AdminAnalytics />} />
       <Route path="/admin/volunteers" element={<AdminVolunteers />} />
       <Route path="/profile" element={<VolunteerProfile />} />
       <Route path="*" element={<PageNotFound />} />

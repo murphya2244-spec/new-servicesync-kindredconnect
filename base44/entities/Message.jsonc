@@ -1,0 +1,39 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "channel": {
+      "type": "string",
+      "description": "Channel identifier: 'general', 'event:{event_id}', or 'direct:{email1}:{email2}' (emails sorted alphabetically)"
+    },
+    "channel_label": {
+      "type": "string",
+      "description": "Human-readable label for the channel"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the sender"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Display name of the sender"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message text"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "group",
+        "direct"
+      ],
+      "default": "group"
+    }
+  },
+  "required": [
+    "channel",
+    "sender_email",
+    "content"
+  ]
+}
