@@ -53,7 +53,7 @@ export default function VolunteerProfile() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe({
+    await base44.entities.User.update(user.id, {
       bio: form.bio,
       phone: form.phone,
       skills: form.skills,
