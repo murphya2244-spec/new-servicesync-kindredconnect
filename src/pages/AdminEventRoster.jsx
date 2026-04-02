@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Users, Search, UserPlus, X, CheckCircle } from "lucide-react";
+import { ArrowLeft, Users, Search, UserPlus, X, CheckCircle, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -94,13 +94,43 @@ export default function AdminEventRoster() {
       s.volunteer_email.toLowerCase().includes(search.toLowerCase());
   });
 
-  const assignCandidates = allVolunteers.filter(v => {
-    if (!assignSearch) return false;
-    const alreadyActive = signups.find(s => s.volunteer_email === v.email && s.status !== "cancelled");
-    const matchesSearch = v.full_name?.toLowerCase().includes(assignSearch.toLowerCase()) ||
-      v.email?.toLowerCase().includes(assignSearch.toLowerCase());
-    return matchesSearch && !alreadyActive;
-  });
+  const eventSkills = event?.skills_needed || [];
+
+  const getMatchScore = (vol) => {
+    if (!eventSkills.length || !vol.skills?.length) return 0;
+    return vol.skills.filter(s => eventSkills.some(es => es.toLowerCase() === s.toLowerCase())).length;
+  };
+
+  const getMatchedSkills = (vol) => {
+    if (!eventSkills.length || !vol.skills?.length) return [];
+    return vol.skills.filter(s => eventSkills.some(es => es.toLowerCase() === s.toLowerCase()));
+  };
+
+  // When no search query, show suggested matches (volunteers with matching skills, sorted by score)
+  // When there's a search query, filter by name/email but still sort by match score
+  const assignCandidates = (() => {
+    const notOnRoster = allVolunteers.filter(v => {
+      const alreadyActive = signups.find(s => s.volunteer_email === v.email && s.status !== "cancelled");
+      return !alreadyActive;
+    });
+
+    if (!assignSearch) {
+      // Show top skill-matched volunteers when no search
+      if (!eventSkills.length) return [];
+      return notOnRoster
+        .filter(v => getMatchScore(v) > 0)
+        .sort((a, b) => getMatchScore(b) - getMatchScore(a))
+        .slice(0, 6);
+    }
+
+    return notOnRoster
+      .filter(v =>
+        v.full_name?.toLowerCase().includes(assignSearch.toLowerCase()) ||
+        v.email?.toLowerCase().includes(assignSearch.toLowerCase())
+      )
+      .sort((a, b) => getMatchScore(b) - getMatchScore(a))
+      .slice(0, 8);
+  })();
 
   if (loading) return (
     <AppLayout role="admin" user={user}>
@@ -183,29 +213,61 @@ export default function AdminEventRoster() {
                 onChange={e => setAssignSearch(e.target.value)}
                 className="mb-3"
               />
+
+              {/* Suggested matches label */}
+              {!assignSearch && eventSkills.length > 0 && assignCandidates.length > 0 && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  Suggested based on skills: <span className="font-medium text-foreground">{eventSkills.join(", ")}</span>
+                </div>
+              )}
+
               {assignCandidates.length > 0 && (
                 <div className="border border-border rounded-lg divide-y divide-border">
-                  {assignCandidates.slice(0, 8).map(vol => {
+                  {assignCandidates.map(vol => {
                     const initials = vol.full_name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "?";
+                    const score = getMatchScore(vol);
+                    const matched = getMatchedSkills(vol);
                     return (
                       <div key={vol.id} className="flex items-center justify-between px-3 py-2.5 hover:bg-muted/40">
-                        <div className="flex items-center gap-2">
-                          <Avatar className="w-8 h-8">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Avatar className="w-8 h-8 shrink-0">
                             <AvatarImage src={vol.profile_image_url} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">{initials}</AvatarFallback>
                           </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{vol.full_name}</p>
-                            <p className="text-xs text-muted-foreground">{vol.email}</p>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-sm font-medium truncate">{vol.full_name}</p>
+                              {score > 0 && (
+                                <span className="inline-flex items-center gap-0.5 bg-accent/10 text-accent text-xs px-1.5 py-0.5 rounded-full shrink-0 font-medium">
+                                  <Sparkles className="w-2.5 h-2.5" />
+                                  {score}/{eventSkills.length}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground truncate">{vol.email}</p>
+                            {matched.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {matched.map(skill => (
+                                  <span key={skill} className="text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded-full">{skill}</span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <Button size="sm" onClick={() => handleAssign(vol)} className="bg-primary hover:bg-primary/90 h-7 px-3 text-xs">
+                        <Button size="sm" onClick={() => handleAssign(vol)} className="bg-primary hover:bg-primary/90 h-7 px-3 text-xs ml-2 shrink-0">
                           Assign
                         </Button>
                       </div>
                     );
                   })}
                 </div>
+              )}
+              {!assignSearch && eventSkills.length > 0 && assignCandidates.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-3">No volunteers with matching skills found. Try searching by name.</p>
+              )}
+              {!assignSearch && !eventSkills.length && (
+                <p className="text-sm text-muted-foreground text-center py-3">Search for a volunteer above, or add skills to this event for smart suggestions.</p>
               )}
               {assignSearch && assignCandidates.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-3">No matching volunteers found.</p>
