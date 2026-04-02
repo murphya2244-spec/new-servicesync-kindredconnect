@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings } from "lucide-react";
+import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +9,7 @@ const volunteerNav = [
   { label: "Dashboard", href: "/volunteer-dashboard", icon: Home },
   { label: "Events", href: "/events", icon: Calendar },
   { label: "My Sign-ups", href: "/my-signups", icon: Heart },
+  { label: "My Profile", href: "/profile", icon: Settings },
 ];
 
 const adminNav = [

@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster"
+import { Toaster as SonnerToaster } from "sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -14,6 +15,7 @@ import MySignups from './pages/MySignups';
 import AdminEvents from './pages/AdminEvents';
 import AdminEventForm from './pages/AdminEventForm';
 import AdminVolunteers from './pages/AdminVolunteers';
+import VolunteerProfile from './pages/VolunteerProfile';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -46,6 +48,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin/events/new" element={<AdminEventForm />} />
       <Route path="/admin/events/:id" element={<AdminEventForm />} />
       <Route path="/admin/volunteers" element={<AdminVolunteers />} />
+      <Route path="/profile" element={<VolunteerProfile />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -59,6 +62,7 @@ function App() {
           <AuthenticatedApp />
         </Router>
         <Toaster />
+        <SonnerToaster richColors position="top-right" />
       </QueryClientProvider>
     </AuthProvider>
   )

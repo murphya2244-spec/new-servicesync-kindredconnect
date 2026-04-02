@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
-import { Calendar, MapPin, Users, Search, Filter } from "lucide-react";
+import { Calendar, MapPin, Users, Search, Filter, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import AppLayout from "@/components/AppLayout";
+import ConflictWarningDialog from "@/components/ConflictWarningDialog";
 
 const categoryColors = {
   community_outreach: "bg-orange-100 text-orange-700",
@@ -21,40 +22,60 @@ const categoryColors = {
   other: "bg-secondary text-secondary-foreground"
 };
 
+// Returns true if two events are on the same date (simple same-day conflict)
+function hasDateConflict(eventA, eventB) {
+  return eventA.date && eventB.date && eventA.date === eventB.date;
+}
+
 export default function EventsPage() {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
+  const [allSignups, setAllSignups] = useState([]);
   const [mySignups, setMySignups] = useState([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [pendingEvent, setPendingEvent] = useState(null);
+  const [conflicts, setConflicts] = useState([]);
+  const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const me = await base44.auth.me();
       setUser(me);
-      const [evs, sups] = await Promise.all([
+      const [evs, allSups, mySups] = await Promise.all([
         base44.entities.Event.list("date"),
+        base44.entities.Signup.list(),
         base44.entities.Signup.filter({ volunteer_email: me.email })
       ]);
       setEvents(evs);
-      setMySignups(sups);
+      setAllSignups(allSups);
+      setMySignups(mySups);
       setLoading(false);
     };
     load();
   }, []);
 
-  const signedUpIds = new Set(mySignups.map(s => s.event_id));
+  const activeMySignups = mySignups.filter(s => s.status !== "cancelled");
+  const signedUpIds = new Set(activeMySignups.map(s => s.event_id));
 
-  const filtered = events.filter(e => {
-    const matchSearch = e.title?.toLowerCase().includes(search.toLowerCase()) ||
-      e.location?.toLowerCase().includes(search.toLowerCase());
-    const matchCat = categoryFilter === "all" || e.category === categoryFilter;
-    return matchSearch && matchCat;
+  // Count active signups per event
+  const signupCountMap = {};
+  allSignups.forEach(s => {
+    if (s.status !== "cancelled") {
+      signupCountMap[s.event_id] = (signupCountMap[s.event_id] || 0) + 1;
+    }
   });
 
-  const handleSignup = async (event) => {
-    if (signedUpIds.has(event.id)) return;
+  const isFull = (event) => event.capacity && (signupCountMap[event.id] || 0) >= event.capacity;
+
+  const getConflicts = (targetEvent) => {
+    const myEventIds = activeMySignups.map(s => s.event_id);
+    const myEvents = events.filter(e => myEventIds.includes(e.id));
+    return myEvents.filter(e => hasDateConflict(e, targetEvent));
+  };
+
+  const doSignup = async (event) => {
     await base44.entities.Signup.create({
       event_id: event.id,
       volunteer_email: user.email,
@@ -62,7 +83,38 @@ export default function EventsPage() {
       status: "confirmed"
     });
     setMySignups(prev => [...prev, { event_id: event.id, volunteer_email: user.email, status: "confirmed" }]);
+    setAllSignups(prev => [...prev, { event_id: event.id, volunteer_email: user.email, status: "confirmed" }]);
+    toast.success("Signed up successfully!");
   };
+
+  const handleSignup = async (event) => {
+    if (signedUpIds.has(event.id)) return;
+    if (isFull(event)) {
+      toast.error("This event is full.");
+      return;
+    }
+    const conflicting = getConflicts(event);
+    if (conflicting.length > 0) {
+      setConflicts(conflicting);
+      setPendingEvent(event);
+      setConflictDialogOpen(true);
+      return;
+    }
+    await doSignup(event);
+  };
+
+  const handleConfirmConflict = async () => {
+    setConflictDialogOpen(false);
+    if (pendingEvent) await doSignup(pendingEvent);
+    setPendingEvent(null);
+  };
+
+  const filtered = events.filter(e => {
+    const matchSearch = e.title?.toLowerCase().includes(search.toLowerCase()) ||
+      e.location?.toLowerCase().includes(search.toLowerCase());
+    const matchCat = categoryFilter === "all" || e.category === categoryFilter;
+    return matchSearch && matchCat;
+  });
 
   if (loading) return (
     <AppLayout role={user?.role || "volunteer"} user={user}>
@@ -112,57 +164,62 @@ export default function EventsPage() {
 
         {/* Events Grid */}
         <div className="grid md:grid-cols-2 gap-4">
-          {filtered.map(event => (
-            <Card key={event.id} className="border-border hover:shadow-md transition-shadow">
-              {event.image_url && (
-                <div className="h-36 rounded-t-lg overflow-hidden">
-                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
-                </div>
-              )}
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="font-fraunces text-lg leading-tight">{event.title}</CardTitle>
-                  {signedUpIds.has(event.id) && (
-                    <Badge className="bg-accent/10 text-accent border-0 shrink-0">Joined</Badge>
+          {filtered.map(event => {
+            const full = isFull(event);
+            const joined = signedUpIds.has(event.id);
+            const count = signupCountMap[event.id] || 0;
+            return (
+              <Card key={event.id} className="border-border hover:shadow-md transition-shadow">
+                {event.image_url && (
+                  <div className="h-36 rounded-t-lg overflow-hidden">
+                    <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="font-fraunces text-lg leading-tight">{event.title}</CardTitle>
+                    {joined && <Badge className="bg-accent/10 text-accent border-0 shrink-0">Joined</Badge>}
+                    {!joined && full && <Badge className="bg-red-100 text-red-600 border-0 shrink-0">Full</Badge>}
+                  </div>
+                  <Badge variant="secondary" className={`w-fit text-xs ${categoryColors[event.category] || ""}`}>
+                    {event.category?.replace(/_/g, " ")}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-1.5">
+                  {event.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
                   )}
-                </div>
-                <Badge variant="secondary" className={`w-fit text-xs ${categoryColors[event.category] || ""}`}>
-                  {event.category?.replace(/_/g, " ")}
-                </Badge>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-1.5">
-                {event.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
-                )}
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  {event.date ? format(new Date(event.date), "MMM d, yyyy") : "TBD"}
-                  {event.time && <span>· {event.time}</span>}
-                </div>
-                {event.location && (
                   <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4" />
-                    {event.location}
+                    <Calendar className="w-4 h-4" />
+                    {event.date ? format(new Date(event.date), "MMM d, yyyy") : "TBD"}
+                    {event.time && <span>· {event.time}</span>}
                   </div>
-                )}
-                {event.capacity && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    Up to {event.capacity} volunteers
-                  </div>
-                )}
-                <Button
-                  size="sm"
-                  className="w-full mt-3"
-                  disabled={signedUpIds.has(event.id)}
-                  onClick={() => handleSignup(event)}
-                  variant={signedUpIds.has(event.id) ? "secondary" : "default"}
-                >
-                  {signedUpIds.has(event.id) ? "Already Signed Up ✓" : "Sign Up"}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  {event.location && (
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      {event.location}
+                    </div>
+                  )}
+                  {event.capacity && (
+                    <div className={`flex items-center gap-1.5 text-sm ${full ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
+                      <Users className="w-4 h-4" />
+                      {count} / {event.capacity} volunteers
+                      {full && <AlertCircle className="w-3.5 h-3.5" />}
+                    </div>
+                  )}
+                  <Button
+                    size="sm"
+                    className="w-full mt-3"
+                    disabled={joined || full}
+                    onClick={() => handleSignup(event)}
+                    variant={joined ? "secondary" : "default"}
+                  >
+                    {joined ? "Already Signed Up ✓" : full ? "Event Full" : "Sign Up"}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {filtered.length === 0 && (
@@ -172,6 +229,13 @@ export default function EventsPage() {
           </div>
         )}
       </div>
+
+      <ConflictWarningDialog
+        open={conflictDialogOpen}
+        onOpenChange={setConflictDialogOpen}
+        conflicts={conflicts}
+        onConfirm={handleConfirmConflict}
+      />
     </AppLayout>
   );
 }
