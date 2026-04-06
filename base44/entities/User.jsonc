@@ -92,6 +92,18 @@
         ]
       },
       "description": "Preferred interaction styles"
+    },
+    "badges_earned": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of earned badge IDs"
+    },
+    "events_attended_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of events attended"
     }
   }
 }

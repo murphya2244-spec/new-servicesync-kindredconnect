@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Users, Search, UserPlus, X, CheckCircle, Sparkles } from "lucide-react";
+import BadgeDisplay from "@/components/BadgeDisplay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -308,12 +309,15 @@ export default function AdminEventRoster() {
                           </Avatar>
                         </button>
                         <div>
-                          <button
-                            onClick={() => vol && openProfile(vol)}
-                            className="text-sm font-medium text-foreground hover:text-primary transition-colors text-left"
-                          >
-                            {name}
-                          </button>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <button
+                              onClick={() => vol && openProfile(vol)}
+                              className="text-sm font-medium text-foreground hover:text-primary transition-colors text-left"
+                            >
+                              {name}
+                            </button>
+                            <BadgeDisplay earnedBadgeIds={vol?.badges_earned} size="sm" max={3} />
+                          </div>
                           <p className="text-xs text-muted-foreground">{signup.volunteer_email}</p>
                         </div>
                       </div>

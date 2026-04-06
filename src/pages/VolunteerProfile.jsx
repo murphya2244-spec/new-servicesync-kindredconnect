@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { User, Phone, Briefcase, Clock, Plus, X, Save, GraduationCap, Building2, MapPin, Heart } from "lucide-react";
+import { User, Phone, Briefcase, Clock, Plus, X, Save, GraduationCap, Building2, MapPin, Heart, Medal } from "lucide-react";
+import { BADGES } from "@/lib/badges";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -371,6 +372,35 @@ export default function VolunteerProfile() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Badges */}
+        {user?.badges_earned?.length > 0 && (
+          <Card className="border-border mb-5">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-fraunces text-lg flex items-center gap-2">
+                <Medal className="w-4 h-4 text-primary" /> My Badges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {BADGES.filter(b => user.badges_earned.includes(b.id)).map(badge => {
+                  const Icon = badge.icon;
+                  return (
+                    <div key={badge.id} className={`flex items-center gap-3 p-3 rounded-xl border border-border ${badge.color.split(" ")[1]}`}>
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${badge.color}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold truncate">{badge.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{badge.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <VolunteerDocumentUpload volunteerEmail={user?.email} />
 

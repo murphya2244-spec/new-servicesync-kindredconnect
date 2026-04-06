@@ -22,6 +22,7 @@ import CalendarPage from './pages/CalendarPage';
 import MessagingPage from './pages/MessagingPage';
 import AdminAnalytics from './pages/AdminAnalytics';
 import DemoPage from './pages/DemoPage';
+import AchievementsPage from './pages/AchievementsPage';
 
 const NPOGuard = ({ children }) => {
   const { user } = useAuth();
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
       <Route path="/admin/events/:id/roster" element={<NPOGuard><AdminEventRoster /></NPOGuard>} />
       <Route path="/admin/analytics" element={<NPOGuard><AdminAnalytics /></NPOGuard>} />
       <Route path="/admin/volunteers" element={<NPOGuard><AdminVolunteers /></NPOGuard>} />
+      <Route path="/achievements" element={<AchievementsPage />} />
       <Route path="/demo" element={<DemoPage />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

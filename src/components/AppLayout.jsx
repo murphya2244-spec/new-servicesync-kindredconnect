@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, MessageSquare, BarChart2, ClipboardList } from "lucide-react";
+import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, MessageSquare, BarChart2, ClipboardList, Award } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ const volunteerNav = [
   { label: "Calendar", href: "/calendar", icon: Calendar },
   { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "My Sign-ups", href: "/my-signups", icon: Heart },
+  { label: "Achievements", href: "/achievements", icon: Award },
   { label: "My Profile", href: "/profile", icon: Settings },
 ];
 
