@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Users, Calendar, ArrowRight, Zap, BarChart2, Shield } from "lucide-react";
+import { Heart, Users, Calendar, ArrowRight, Zap, BarChart2, Shield, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const fadeUp = {
@@ -57,7 +57,7 @@ export default function Landing() {
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-7 border border-primary/20"
           >
-            <Heart className="w-4 h-4" />
+            <Handshake className="w-4 h-4" />
             Volunteer Management for Nonprofits
           </motion.div>
 
