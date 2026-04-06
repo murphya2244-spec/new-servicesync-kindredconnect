@@ -202,6 +202,42 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* Enterprise CTA */}
+      <div className="relative overflow-hidden bg-foreground">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1600&q=80')] bg-cover bg-center opacity-5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-accent/20 pointer-events-none" />
+        <div className="relative max-w-5xl mx-auto px-6 py-24 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <span className="inline-block text-xs uppercase tracking-widest font-semibold text-primary bg-primary/20 px-3 py-1 rounded-full mb-6">For Organizations</span>
+            <h2 className="font-fraunces text-4xl md:text-5xl font-semibold text-white leading-tight mb-5">
+              Scale your volunteer program<br />
+              <span className="text-primary">without the chaos</span>
+            </h2>
+            <p className="text-white/60 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+              VolunteerConnect Enterprise gives nonprofits and large organizations the tools to coordinate hundreds of volunteers, automate communications, and measure real-world impact — all from one platform.
+            </p>
+            <div className="flex flex-wrap gap-6 justify-center mb-12">
+              {["Unlimited volunteers", "Advanced analytics", "Custom branding", "Priority support"].map((f) => (
+                <div key={f} className="flex items-center gap-2 text-white/70 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  {f}
+                </div>
+              ))}
+            </div>
+            <Link to="/demo">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white gap-2 text-base px-10 py-6 rounded-xl shadow-xl shadow-primary/30">
+                See the Platform in Action
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer className="border-t border-border text-center py-8 text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">

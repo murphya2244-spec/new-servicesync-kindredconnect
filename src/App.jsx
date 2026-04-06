@@ -21,6 +21,7 @@ import AdminEventRoster from './pages/AdminEventRoster';
 import CalendarPage from './pages/CalendarPage';
 import MessagingPage from './pages/MessagingPage';
 import AdminAnalytics from './pages/AdminAnalytics';
+import DemoPage from './pages/DemoPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -57,6 +58,7 @@ const AuthenticatedApp = () => {
       <Route path="/calendar" element={<CalendarPage />} />
       <Route path="/messages" element={<MessagingPage />} />
       <Route path="/admin/analytics" element={<AdminAnalytics />} />
+      <Route path="/demo" element={<DemoPage />} />
       <Route path="/admin/volunteers" element={<AdminVolunteers />} />
       <Route path="/profile" element={<VolunteerProfile />} />
       <Route path="*" element={<PageNotFound />} />
