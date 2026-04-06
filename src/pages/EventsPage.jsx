@@ -28,6 +28,58 @@ function hasDateConflict(eventA, eventB) {
   return eventA.date && eventB.date && eventA.date === eventB.date;
 }
 
+function EventCard({ event, joined, full, count, score }) {
+  return (
+    <Card className={`border-border hover:shadow-md transition-shadow ${score > 0 ? "ring-1 ring-primary/20" : ""}`}>
+      {event.image_url && (
+        <div className="h-36 rounded-t-lg overflow-hidden">
+          <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="font-fraunces text-lg leading-tight">{event.title}</CardTitle>
+          <div className="flex gap-1 shrink-0">
+            {joined && <Badge className="bg-accent/10 text-accent border-0">Joined</Badge>}
+            {!joined && full && <Badge className="bg-red-100 text-red-600 border-0">Full</Badge>}
+          </div>
+        </div>
+        <Badge variant="secondary" className={`w-fit text-xs ${categoryColors[event.category] || ""}`}>
+          {event.category?.replace(/_/g, " ")}
+        </Badge>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-1.5">
+        {event.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+        )}
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Calendar className="w-4 h-4" />
+          {event.date ? format(new Date(event.date), "MMM d, yyyy") : "TBD"}
+          {event.time && <span>· {event.time}</span>}
+        </div>
+        {event.location && (
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="w-4 h-4" />
+            {event.location}
+          </div>
+        )}
+        {event.capacity && (
+          <div className={`flex items-center gap-1.5 text-sm ${full ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
+            <Users className="w-4 h-4" />
+            {count} / {event.capacity} volunteers
+            {full && <AlertCircle className="w-3.5 h-3.5" />}
+          </div>
+        )}
+        <Link to={`/events/${event.id}`}>
+          <Button size="sm" className="w-full mt-3" variant={joined ? "secondary" : "default"}>
+            {joined ? "View Details ✓" : full ? "View Details" : "View & Sign Up"}
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function EventsPage() {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
@@ -110,12 +162,29 @@ export default function EventsPage() {
     setPendingEvent(null);
   };
 
+  // Skill-based match score for an event
+  const matchScore = (event) => {
+    if (!user?.skills?.length || !event.skills_needed?.length) return 0;
+    return event.skills_needed.filter(skill =>
+      user.skills.some(vs =>
+        vs.toLowerCase().includes(skill.toLowerCase()) ||
+        skill.toLowerCase().includes(vs.toLowerCase())
+      )
+    ).length;
+  };
+
   const filtered = events.filter(e => {
     const matchSearch = e.title?.toLowerCase().includes(search.toLowerCase()) ||
       e.location?.toLowerCase().includes(search.toLowerCase());
     const matchCat = categoryFilter === "all" || e.category === categoryFilter;
     return matchSearch && matchCat;
   });
+
+  // Separate into recommended (skill match > 0) and others, only when no active filters
+  const hasFilters = search || categoryFilter !== "all";
+  const recommended = !hasFilters ? filtered.filter(e => matchScore(e) > 0).sort((a, b) => matchScore(b) - matchScore(a)) : [];
+  const recommendedIds = new Set(recommended.map(e => e.id));
+  const others = !hasFilters ? filtered.filter(e => !recommendedIds.has(e.id)) : filtered;
 
   if (loading) return (
     <AppLayout role={user?.role || "volunteer"} user={user}>
@@ -163,70 +232,39 @@ export default function EventsPage() {
           </Select>
         </div>
 
-        {/* Events Grid */}
+        {/* Recommended (skill-matched) section */}
+        {!hasFilters && recommended.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg font-fraunces font-semibold">Recommended for You</span>
+              <Badge className="bg-primary/10 text-primary border-0 text-xs">Skill match</Badge>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              {recommended.map(event => <EventCard key={event.id} event={event} joined={signedUpIds.has(event.id)} full={isFull(event)} count={signupCountMap[event.id] || 0} score={matchScore(event)} />)}
+            </div>
+          </div>
+        )}
+
+        {/* All / remaining events */}
+        {!hasFilters && others.length > 0 && (
+          <div className="mb-2">
+            <p className="text-lg font-fraunces font-semibold mb-3">{recommended.length > 0 ? "All Other Events" : "All Events"}</p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-4">
-          {filtered.map(event => {
-            const full = isFull(event);
-            const joined = signedUpIds.has(event.id);
-            const count = signupCountMap[event.id] || 0;
-            return (
-              <Card key={event.id} className="border-border hover:shadow-md transition-shadow">
-                {event.image_url && (
-                  <div className="h-36 rounded-t-lg overflow-hidden">
-                    <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="font-fraunces text-lg leading-tight">{event.title}</CardTitle>
-                    {joined && <Badge className="bg-accent/10 text-accent border-0 shrink-0">Joined</Badge>}
-                    {!joined && full && <Badge className="bg-red-100 text-red-600 border-0 shrink-0">Full</Badge>}
-                  </div>
-                  <Badge variant="secondary" className={`w-fit text-xs ${categoryColors[event.category] || ""}`}>
-                    {event.category?.replace(/_/g, " ")}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-1.5">
-                  {event.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
-                  )}
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    {event.date ? format(new Date(event.date), "MMM d, yyyy") : "TBD"}
-                    {event.time && <span>· {event.time}</span>}
-                  </div>
-                  {event.location && (
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4" />
-                      {event.location}
-                    </div>
-                  )}
-                  {event.capacity && (
-                    <div className={`flex items-center gap-1.5 text-sm ${full ? "text-red-500 font-medium" : "text-muted-foreground"}`}>
-                      <Users className="w-4 h-4" />
-                      {count} / {event.capacity} volunteers
-                      {full && <AlertCircle className="w-3.5 h-3.5" />}
-                    </div>
-                  )}
-                  <Link to={`/events/${event.id}`}>
-                    <Button
-                      size="sm"
-                      className="w-full mt-3"
-                      variant={joined ? "secondary" : "default"}
-                    >
-                      {joined ? "View Details ✓" : full ? "View Details" : "View & Sign Up"}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {(hasFilters ? filtered : others).map(event => (
+            <EventCard key={event.id} event={event} joined={signedUpIds.has(event.id)} full={isFull(event)} count={signupCountMap[event.id] || 0} score={0} />
+          ))}
         </div>
 
         {filtered.length === 0 && (
           <div className="text-center py-16 text-muted-foreground">
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>No events found. Try adjusting your filters.</p>
+            {user?.skills?.length > 0
+              ? <><p className="font-medium">No matching events found for your skills.</p><p className="text-sm mt-1">Try browsing all categories or check back later.</p></>
+              : <p>No events found. Try adjusting your filters.</p>
+            }
           </div>
         )}
       </div>

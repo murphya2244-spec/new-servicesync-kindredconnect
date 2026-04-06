@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, Heart, Award, MapPin, ChevronRight } from "lucide-react";
+import { Calendar, Clock, Heart, MapPin, ChevronRight, AlertCircle, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,12 +55,42 @@ export default function VolunteerDashboard() {
     <AppLayout role="volunteer" user={user}>
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Welcome */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl font-fraunces font-semibold text-foreground mb-1">
             Welcome back, {user?.full_name?.split(" ")[0] || "Volunteer"} 👋
           </h1>
           <p className="text-muted-foreground">Ready to make a difference today?</p>
         </div>
+
+        {/* Profile completeness prompt */}
+        {(() => {
+          const missing = [];
+          if (!user?.skills?.length) missing.push("skills");
+          if (!user?.availability) missing.push("availability");
+          if (!user?.bio) missing.push("bio");
+          if (missing.length > 0) return (
+            <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold text-amber-800 text-sm">Complete your profile to get better event matches</p>
+                <p className="text-amber-700 text-xs mt-0.5">Missing: {missing.join(", ")}. We use this to recommend events that fit your skills.</p>
+              </div>
+              <Link to="/profile">
+                <button className="shrink-0 text-xs font-semibold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-lg transition-colors">
+                  Complete Profile
+                </button>
+              </Link>
+            </div>
+          );
+          return (
+            <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              <p className="text-green-800 text-sm font-medium">Profile complete — you'll receive personalized event recommendations!</p>
+            </div>
+          );
+        })()}
+
+
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
