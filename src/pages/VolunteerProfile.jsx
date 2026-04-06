@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { User, Phone, Briefcase, Clock, Plus, X, Save, GraduationCap, Building2, MapPin } from "lucide-react";
+import { User, Phone, Briefcase, Clock, Plus, X, Save, GraduationCap, Building2, MapPin, Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,9 @@ export default function VolunteerProfile() {
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({
     bio: "", phone: "", address: "", skills: [], availability: "",
-    education: [], work_experience: []
+    education: [], work_experience: [],
+    work_environment_preference: [],
+    interaction_type_preference: []
   });
   const [skillInput, setSkillInput] = useState("");
   const [saving, setSaving] = useState(false);
@@ -43,7 +45,9 @@ export default function VolunteerProfile() {
         skills: me.skills || [],
         availability: me.availability || "",
         education: me.education || [],
-        work_experience: me.work_experience || []
+        work_experience: me.work_experience || [],
+        work_environment_preference: me.work_environment_preference || [],
+        interaction_type_preference: me.interaction_type_preference || []
       });
       setLoading(false);
     };
@@ -102,7 +106,9 @@ export default function VolunteerProfile() {
       skills: form.skills,
       availability: form.availability,
       education: form.education,
-      work_experience: form.work_experience
+      work_experience: form.work_experience,
+      work_environment_preference: form.work_environment_preference,
+      interaction_type_preference: form.interaction_type_preference
     });
     setSaving(false);
     toast.success("Profile updated!");
@@ -286,6 +292,83 @@ export default function VolunteerProfile() {
                 <SelectItem value="flexible">Flexible</SelectItem>
               </SelectContent>
             </Select>
+          </CardContent>
+        </Card>
+
+        {/* Volunteer Preferences */}
+        <Card className="border-border mb-5">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-fraunces text-lg flex items-center gap-2">
+              <Heart className="w-4 h-4 text-primary" /> Volunteer Preferences
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Work Environment</Label>
+              <p className="text-xs text-muted-foreground">Select all that apply</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { value: "indoor", label: "🏠 Indoor" },
+                  { value: "outdoor", label: "🌿 Outdoor" },
+                  { value: "hybrid", label: "🔄 Both / Hybrid" }
+                ].map(({ value, label }) => {
+                  const selected = form.work_environment_preference.includes(value);
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setForm(p => ({
+                        ...p,
+                        work_environment_preference: selected
+                          ? p.work_environment_preference.filter(v => v !== value)
+                          : [...p.work_environment_preference, value]
+                      }))}
+                      className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                        selected
+                          ? "bg-primary/10 border-primary text-primary font-medium"
+                          : "border-border text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Interaction Style</Label>
+              <p className="text-xs text-muted-foreground">Select all that apply</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { value: "high_social", label: "🤝 High Social" },
+                  { value: "low_social", label: "🤫 Low Social" },
+                  { value: "independent", label: "🧍 Independent" },
+                  { value: "team_based", label: "👥 Team-Based" }
+                ].map(({ value, label }) => {
+                  const selected = form.interaction_type_preference.includes(value);
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setForm(p => ({
+                        ...p,
+                        interaction_type_preference: selected
+                          ? p.interaction_type_preference.filter(v => v !== value)
+                          : [...p.interaction_type_preference, value]
+                      }))}
+                      className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                        selected
+                          ? "bg-primary/10 border-primary text-primary font-medium"
+                          : "border-border text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </CardContent>
         </Card>
 

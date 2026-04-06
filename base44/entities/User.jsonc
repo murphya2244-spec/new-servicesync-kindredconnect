@@ -10,7 +10,7 @@
         "admin"
       ],
       "default": "volunteer",
-      "description": "User role: volunteer (default), coordinator (NPO staff), or admin (NPO owner)"
+      "description": "User role"
     },
     "bio": {
       "type": "string",
@@ -67,6 +67,31 @@
     "profile_image_url": {
       "type": "string",
       "description": "Profile image URL"
+    },
+    "work_environment_preference": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "indoor",
+          "outdoor",
+          "hybrid"
+        ]
+      },
+      "description": "Preferred work environments"
+    },
+    "interaction_type_preference": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "high_social",
+          "low_social",
+          "independent",
+          "team_based"
+        ]
+      },
+      "description": "Preferred interaction styles"
     }
   }
 }

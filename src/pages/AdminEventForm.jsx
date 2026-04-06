@@ -21,7 +21,9 @@ const defaultForm = {
   status: "upcoming",
   category: "other",
   image_url: "",
-  skills_needed: []
+  skills_needed: [],
+  event_environment: "",
+  event_interaction_level: ""
 };
 
 export default function AdminEventForm() {
@@ -54,7 +56,9 @@ export default function AdminEventForm() {
             status: e.status || "upcoming",
             category: e.category || "other",
             image_url: e.image_url || "",
-            skills_needed: e.skills_needed || []
+            skills_needed: e.skills_needed || [],
+            event_environment: e.event_environment || "",
+            event_interaction_level: e.event_interaction_level || ""
           });
         }
       }
@@ -173,6 +177,32 @@ export default function AdminEventForm() {
               <div className="space-y-1.5">
                 <Label htmlFor="image_url">Banner Image URL</Label>
                 <Input id="image_url" value={form.image_url} onChange={e => set("image_url", e.target.value)} placeholder="https://..." />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="event_environment">Work Environment</Label>
+                  <Select value={form.event_environment || ""} onValueChange={v => set("event_environment", v)}>
+                    <SelectTrigger><SelectValue placeholder="Select environment" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="indoor">🏠 Indoor</SelectItem>
+                      <SelectItem value="outdoor">🌿 Outdoor</SelectItem>
+                      <SelectItem value="hybrid">🔄 Hybrid</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="event_interaction_level">Interaction Style</Label>
+                  <Select value={form.event_interaction_level || ""} onValueChange={v => set("event_interaction_level", v)}>
+                    <SelectTrigger><SelectValue placeholder="Select style" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high_social">🤝 High Social</SelectItem>
+                      <SelectItem value="low_social">🤫 Low Social</SelectItem>
+                      <SelectItem value="independent">🧍 Independent</SelectItem>
+                      <SelectItem value="team_based">👥 Team-Based</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-1.5">

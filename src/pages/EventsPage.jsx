@@ -162,15 +162,31 @@ export default function EventsPage() {
     setPendingEvent(null);
   };
 
-  // Skill-based match score for an event
+  // Enhanced match score: skills + environment + interaction preferences
   const matchScore = (event) => {
-    if (!user?.skills?.length || !event.skills_needed?.length) return 0;
-    return event.skills_needed.filter(skill =>
-      user.skills.some(vs =>
-        vs.toLowerCase().includes(skill.toLowerCase()) ||
-        skill.toLowerCase().includes(vs.toLowerCase())
-      )
-    ).length;
+    let score = 0;
+
+    // Skills match
+    if (user?.skills?.length && event.skills_needed?.length) {
+      score += event.skills_needed.filter(skill =>
+        user.skills.some(vs =>
+          vs.toLowerCase().includes(skill.toLowerCase()) ||
+          skill.toLowerCase().includes(vs.toLowerCase())
+        )
+      ).length * 2; // weight skills higher
+    }
+
+    // Environment preference match
+    if (user?.work_environment_preference?.length && event.event_environment) {
+      if (user.work_environment_preference.includes(event.event_environment)) score += 1;
+    }
+
+    // Interaction style preference match
+    if (user?.interaction_type_preference?.length && event.event_interaction_level) {
+      if (user.interaction_type_preference.includes(event.event_interaction_level)) score += 1;
+    }
+
+    return score;
   };
 
   const filtered = events.filter(e => {
