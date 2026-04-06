@@ -48,39 +48,75 @@ export default function Landing() {
 
       {/* Features */}
       <div className="max-w-5xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="text-center mb-14"
+        >
+          <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-3">Why VolunteerConnect</p>
+          <h2 className="font-fraunces text-3xl md:text-4xl font-semibold text-foreground">
+            Everything you need to make <br className="hidden md:block" />
+            <span className="text-primary">a lasting difference</span>
+          </h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-6">
           {[
             {
               icon: Calendar,
-              color: "text-primary bg-primary/10",
+              gradient: "from-primary/20 via-primary/10 to-transparent",
+              iconBg: "bg-primary text-primary-foreground",
               title: "Discover Events",
-              desc: "Browse upcoming volunteer opportunities filtered by cause, location, and availability."
+              desc: "Browse curated volunteer opportunities filtered by cause, location, and your personal availability.",
+              stat: "50+ events",
+              statLabel: "listed each month"
             },
             {
               icon: Users,
-              color: "text-accent bg-accent/10",
+              gradient: "from-accent/20 via-accent/10 to-transparent",
+              iconBg: "bg-accent text-accent-foreground",
               title: "Easy Sign-ups",
-              desc: "Register for events in one click and manage your schedule from a personal dashboard."
+              desc: "Register in one click and manage your entire schedule from a beautiful personal dashboard.",
+              stat: "1-click",
+              statLabel: "registration flow"
             },
             {
               icon: Heart,
-              color: "text-rose-500 bg-rose-50",
+              gradient: "from-rose-400/20 via-rose-300/10 to-transparent",
+              iconBg: "bg-rose-500 text-white",
               title: "Track Impact",
-              desc: "Log volunteer hours and see the difference you're making in your community."
+              desc: "Log volunteer hours and watch your community contribution grow over time.",
+              stat: "Real-time",
+              statLabel: "impact tracking"
             }
-          ].map(({ icon: Icon, color, title, desc }, i) => (
+          ].map(({ icon: Icon, gradient, iconBg, title, desc, stat, statLabel }, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className="bg-card rounded-2xl p-6 border border-border shadow-sm"
+              transition={{ delay: 0.25 + i * 0.12, duration: 0.5 }}
+              className="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${color}`}>
-                <Icon className="w-6 h-6" />
+              {/* Gradient wash */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-60 pointer-events-none`} />
+
+              <div className="relative p-7 flex flex-col h-full">
+                {/* Icon */}
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 shadow-sm ${iconBg}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+
+                {/* Text */}
+                <h3 className="font-fraunces text-xl font-semibold mb-2 text-foreground">{title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6">{desc}</p>
+
+                {/* Stat pill */}
+                <div className="mt-auto flex items-baseline gap-1.5 border-t border-border pt-4">
+                  <span className="text-lg font-fraunces font-semibold text-foreground">{stat}</span>
+                  <span className="text-xs text-muted-foreground">{statLabel}</span>
+                </div>
               </div>
-              <h3 className="font-fraunces text-xl font-semibold mb-2">{title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
             </motion.div>
           ))}
         </div>
