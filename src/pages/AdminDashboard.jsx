@@ -64,7 +64,8 @@ export default function AdminDashboard() {
           </div>
           <Link to="/admin/events/new">
             <Button className="bg-primary hover:bg-primary/90 gap-2">
-              <Plus className="w-4 h-4" /> New Event
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Event</span>
             </Button>
           </Link>
         </div>
@@ -95,7 +96,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-8 md:grid-cols-4 md:gap-4">
           {[
             { label: "Total Events", value: events.length, icon: Calendar, color: "text-primary bg-primary/10" },
             { label: "Upcoming", value: upcomingCount, icon: TrendingUp, color: "text-accent bg-accent/10" },
@@ -103,13 +104,13 @@ export default function AdminDashboard() {
             { label: "Confirmed Sign-ups", value: confirmedSignups, icon: CheckCircle, color: "text-green-600 bg-green-50" },
           ].map(({ label, value, icon: Icon, color }) => (
             <Card key={label} className="border-border">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
-                  <Icon className="w-5 h-5" />
+              <CardContent className="p-3 flex flex-col items-center text-center sm:flex-row sm:text-left sm:p-4 sm:gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-1 sm:mb-0 ${color}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{value}</p>
-                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">{value}</p>
+                  <p className="text-xs text-muted-foreground leading-tight">{label}</p>
                 </div>
               </CardContent>
             </Card>

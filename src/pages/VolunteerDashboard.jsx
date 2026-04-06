@@ -93,20 +93,20 @@ export default function VolunteerDashboard() {
 
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           {[
             { label: "Events Joined", value: upcomingMyEvents, icon: Calendar, color: "text-primary bg-primary/10" },
             { label: "Hours Logged", value: user?.total_hours || 0, icon: Clock, color: "text-accent bg-accent/10" },
-            { label: "Total Sign-ups", value: mySignups.length, icon: Heart, color: "text-rose-500 bg-rose-50" },
+            { label: "Sign-ups", value: mySignups.length, icon: Heart, color: "text-rose-500 bg-rose-50" },
           ].map(({ label, value, icon: Icon, color }) => (
             <Card key={label} className="border-border">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
-                  <Icon className="w-5 h-5" />
+              <CardContent className="p-3 flex flex-col items-center text-center sm:flex-row sm:text-left sm:p-4 sm:gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-1 sm:mb-0 ${color}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{value}</p>
-                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">{value}</p>
+                  <p className="text-xs text-muted-foreground leading-tight">{label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -123,7 +123,7 @@ export default function VolunteerDashboard() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {events.map(event => (
             <Card key={event.id} className="border-border hover:shadow-md transition-shadow">
               {event.image_url && (

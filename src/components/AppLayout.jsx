@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, MessageSquare, BarChart2 } from "lucide-react";
+import { Heart, Home, Calendar, Users, LogOut, Menu, X, Settings, MessageSquare, BarChart2, ClipboardList } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -35,11 +35,14 @@ export default function AppLayout({ children, role, user }) {
     ? user.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
 
+  // Only show first 4 nav items in bottom bar; rest in overflow
+  const bottomNav = nav.slice(0, 4);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Nav */}
       <header className="sticky top-0 z-40 bg-card/80 backdrop-blur border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -66,7 +69,7 @@ export default function AppLayout({ children, role, user }) {
             ))}
           </nav>
 
-          {/* User */}
+          {/* User area */}
           <div className="flex items-center gap-2">
             <NotificationBell userEmail={user?.email} />
             <div className="hidden sm:flex items-center gap-2 mr-1">
@@ -85,17 +88,17 @@ export default function AppLayout({ children, role, user }) {
               <LogOut className="w-4 h-4" />
               Sign out
             </Button>
-            {/* Mobile menu toggle */}
+            {/* Mobile: more menu */}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile slide-down overflow menu */}
         {menuOpen && (
           <div className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1">
-            {nav.map(({ label, href, icon: Icon }) => (
+            {nav.slice(4).map(({ label, href, icon: Icon }) => (
               <Link key={href} to={href} onClick={() => setMenuOpen(false)}>
                 <Button
                   variant="ghost"
@@ -106,16 +109,53 @@ export default function AppLayout({ children, role, user }) {
                 </Button>
               </Link>
             ))}
-            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={handleLogout}>
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </Button>
+            <div className="border-t border-border pt-2 mt-1">
+              <div className="flex items-center gap-2 px-3 py-2">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={user?.profile_image_url} />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">{initials}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium leading-none">{user?.full_name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{role === "volunteer" ? "Volunteer" : role === "coordinator" ? "Coordinator" : "Admin"}</p>
+                </div>
+              </div>
+              <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={handleLogout}>
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </Button>
+            </div>
           </div>
         )}
       </header>
 
-      {/* Content */}
-      <main className="flex-1">{children}</main>
+      {/* Content — add bottom padding on mobile for the bottom nav */}
+      <main className="flex-1 pb-16 md:pb-0">{children}</main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur border-t border-border">
+        <div className="flex items-center justify-around h-16">
+          {bottomNav.map(({ label, href, icon: Icon }) => {
+            const active = location.pathname === href || location.pathname.startsWith(href + "/");
+            return (
+              <Link key={href} to={href} className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full">
+                <Icon className={`w-5 h-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>{label}</span>
+              </Link>
+            );
+          })}
+          {/* More button for remaining nav items */}
+          {nav.length > 4 && (
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
+            >
+              <Menu className={`w-5 h-5 ${menuOpen ? "text-primary" : "text-muted-foreground"}`} />
+              <span className={`text-[10px] font-medium ${menuOpen ? "text-primary" : "text-muted-foreground"}`}>More</span>
+            </button>
+          )}
+        </div>
+      </nav>
     </div>
   );
 }

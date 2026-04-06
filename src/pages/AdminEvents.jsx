@@ -79,7 +79,8 @@ export default function AdminEvents() {
           </div>
           <Link to="/admin/events/new">
             <Button className="bg-primary hover:bg-primary/90 gap-2">
-              <Plus className="w-4 h-4" /> New Event
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Event</span>
             </Button>
           </Link>
         </div>

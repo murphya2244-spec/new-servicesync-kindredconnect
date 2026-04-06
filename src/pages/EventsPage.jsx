@@ -239,7 +239,7 @@ export default function EventsPage() {
               <span className="text-lg font-fraunces font-semibold">Recommended for You</span>
               <Badge className="bg-primary/10 text-primary border-0 text-xs">Skill match</Badge>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {recommended.map(event => <EventCard key={event.id} event={event} joined={signedUpIds.has(event.id)} full={isFull(event)} count={signupCountMap[event.id] || 0} score={matchScore(event)} />)}
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function EventsPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(hasFilters ? filtered : others).map(event => (
             <EventCard key={event.id} event={event} joined={signedUpIds.has(event.id)} full={isFull(event)} count={signupCountMap[event.id] || 0} score={0} />
           ))}

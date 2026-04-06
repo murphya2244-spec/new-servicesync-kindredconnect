@@ -123,21 +123,21 @@ export default function AdminAnalytics() {
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-8 md:grid-cols-4 md:gap-4">
           {[
             { label: "Total Events", value: events.length, icon: Calendar, color: "text-primary bg-primary/10" },
-            { label: "Unique Volunteers", value: totalVolunteers, icon: Users, color: "text-blue-600 bg-blue-50" },
-            { label: "Total Sign-ups", value: activeSignups.length, icon: TrendingUp, color: "text-accent bg-accent/10" },
-            { label: "Attendance Rate", value: `${attendanceRate}%`, icon: Award, color: "text-green-600 bg-green-50" },
+            { label: "Volunteers", value: totalVolunteers, icon: Users, color: "text-blue-600 bg-blue-50" },
+            { label: "Sign-ups", value: activeSignups.length, icon: TrendingUp, color: "text-accent bg-accent/10" },
+            { label: "Attendance", value: `${attendanceRate}%`, icon: Award, color: "text-green-600 bg-green-50" },
           ].map(({ label, value, icon: Icon, color }) => (
             <Card key={label} className="border-border">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
-                  <Icon className="w-5 h-5" />
+              <CardContent className="p-3 flex flex-col items-center text-center sm:flex-row sm:text-left sm:p-4 sm:gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-1 sm:mb-0 shrink-0 ${color}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{value}</p>
-                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">{value}</p>
+                  <p className="text-xs text-muted-foreground leading-tight">{label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -198,7 +198,7 @@ export default function AdminAnalytics() {
           </Card>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 md:gap-6">
           {/* Sign-ups per event bar chart */}
           <Card className="border-border">
             <CardHeader className="pb-2">
