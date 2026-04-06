@@ -24,18 +24,21 @@ export default function AdminAnalytics() {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [signups, setSignups] = useState([]);
+  const [allVolunteers, setAllVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const me = await base44.auth.me();
       setUser(me);
-      const [evs, sups] = await Promise.all([
+      const [evs, sups, vols] = await Promise.all([
         base44.entities.Event.list("date", 100),
-        base44.entities.Signup.list("-created_date", 500)
+        base44.entities.Signup.list("-created_date", 500),
+        base44.entities.User.list()
       ]);
       setEvents(evs);
       setSignups(sups);
+      setAllVolunteers(vols);
       setLoading(false);
     };
     load();
@@ -96,13 +99,19 @@ export default function AdminAnalytics() {
     return filled < e.capacity * 0.5;
   });
 
-  // Top volunteers by signup count
+  // Top volunteers by signup count + reliability score from User records
+  const userMap = {};
+  allVolunteers.forEach(u => { userMap[u.email] = u; });
+
   const volCounts = {};
   activeSignups.forEach(s => {
-    volCounts[s.volunteer_email] = (volCounts[s.volunteer_email] || { name: s.volunteer_name || s.volunteer_email, count: 0 });
+    volCounts[s.volunteer_email] = volCounts[s.volunteer_email] || { name: s.volunteer_name || s.volunteer_email, count: 0, email: s.volunteer_email };
     volCounts[s.volunteer_email].count++;
   });
-  const topVolunteers = Object.values(volCounts).sort((a, b) => b.count - a.count).slice(0, 5);
+  const topVolunteers = Object.values(volCounts)
+    .map(v => ({ ...v, reliability_score: userMap[v.email]?.reliability_score ?? null }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   return (
     <AppLayout role="admin" user={user}>
@@ -233,6 +242,11 @@ export default function AdminAnalytics() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{v.name}</p>
                     </div>
+                    {v.reliability_score !== null && (
+                      <Badge className={`border-0 text-xs ${v.reliability_score >= 80 ? "bg-green-100 text-green-700" : v.reliability_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}`}>
+                        {v.reliability_score}% reliable
+                      </Badge>
+                    )}
                     <Badge className="bg-primary/10 text-primary border-0">{v.count} sign-up{v.count !== 1 ? "s" : ""}</Badge>
                   </div>
                 ))}

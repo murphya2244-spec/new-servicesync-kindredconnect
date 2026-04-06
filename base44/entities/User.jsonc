@@ -87,6 +87,36 @@
       "default": 0,
       "description": "Total volunteer hours logged"
     },
+    "reliability_score": {
+      "type": "number",
+      "default": 100,
+      "description": "Reliability score (0-100). Increases when volunteer attends, decreases when they cancel after confirming."
+    },
+    "attendance_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "event_title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "attended",
+              "no_show"
+            ]
+          }
+        }
+      },
+      "description": "History of attendance outcomes per event"
+    },
     "profile_image_url": {
       "type": "string",
       "description": "Profile photo URL"
