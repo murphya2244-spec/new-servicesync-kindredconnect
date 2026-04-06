@@ -5,121 +5,68 @@
     "role": {
       "type": "string",
       "enum": [
-        "admin",
-        "volunteer"
+        "volunteer",
+        "coordinator",
+        "admin"
       ],
       "default": "volunteer",
-      "description": "User role in the platform"
+      "description": "User role: volunteer (default), coordinator (NPO staff), or admin (NPO owner)"
     },
     "bio": {
       "type": "string",
-      "description": "Short bio or description"
+      "description": "Short biography"
     },
     "phone": {
       "type": "string",
-      "description": "Contact phone number"
+      "description": "Phone number"
     },
     "address": {
       "type": "string",
-      "description": "Home address"
+      "description": "City/State address"
     },
     "skills": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Volunteer skills"
+      "description": "List of skills"
     },
     "availability": {
       "type": "string",
-      "enum": [
-        "weekdays",
-        "weekends",
-        "both",
-        "flexible"
-      ],
       "description": "General availability"
     },
     "education": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "institution": {
-            "type": "string"
-          },
-          "degree": {
-            "type": "string"
-          },
-          "field": {
-            "type": "string"
-          },
-          "year": {
-            "type": "string"
-          }
-        }
+        "type": "object"
       },
-      "description": "Educational background"
+      "description": "Education history"
     },
     "work_experience": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "duration": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        }
+        "type": "object"
       },
       "description": "Work experience history"
     },
     "total_hours": {
       "type": "number",
-      "default": 0,
       "description": "Total volunteer hours logged"
     },
     "reliability_score": {
       "type": "number",
-      "default": 100,
-      "description": "Reliability score (0-100). Increases when volunteer attends, decreases when they cancel after confirming."
+      "description": "Reliability score 0-100"
     },
     "attendance_history": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "event_id": {
-            "type": "string"
-          },
-          "event_title": {
-            "type": "string"
-          },
-          "date": {
-            "type": "string"
-          },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "attended",
-              "no_show"
-            ]
-          }
-        }
+        "type": "object"
       },
-      "description": "History of attendance outcomes per event"
+      "description": "History of attended/cancelled events"
     },
     "profile_image_url": {
       "type": "string",
-      "description": "Profile photo URL"
+      "description": "Profile image URL"
     }
   }
 }

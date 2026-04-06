@@ -27,7 +27,7 @@ const adminNav = [
 export default function AppLayout({ children, role, user }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const nav = role === "admin" ? adminNav : volunteerNav;
+  const nav = (role === "admin" || role === "coordinator") ? adminNav : volunteerNav;
 
   const handleLogout = () => base44.auth.logout("/");
 
@@ -78,7 +78,7 @@ export default function AppLayout({ children, role, user }) {
               </Avatar>
               <div className="hidden md:block">
                 <p className="text-sm font-medium text-foreground leading-none">{user?.full_name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{role}</p>
+                <p className="text-xs text-muted-foreground capitalize">{role === "volunteer" ? "Volunteer" : role === "coordinator" ? "Coordinator" : "Admin"}</p>
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground gap-1.5 hidden md:flex">

@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -23,8 +23,17 @@ import MessagingPage from './pages/MessagingPage';
 import AdminAnalytics from './pages/AdminAnalytics';
 import DemoPage from './pages/DemoPage';
 
+const NPOGuard = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return null;
+  if (user.role === "volunteer" || !user.role) {
+    return <Navigate to="/volunteer-dashboard" replace />;
+  }
+  return children;
+};
+
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -47,20 +56,21 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/events" element={<EventsPage />} />
       <Route path="/events/:id" element={<EventDetails />} />
       <Route path="/my-signups" element={<MySignups />} />
-      <Route path="/admin/events" element={<AdminEvents />} />
-      <Route path="/admin/events/new" element={<AdminEventForm />} />
-      <Route path="/admin/events/:id" element={<AdminEventForm />} />
-      <Route path="/admin/events/:id/roster" element={<AdminEventRoster />} />
       <Route path="/calendar" element={<CalendarPage />} />
       <Route path="/messages" element={<MessagingPage />} />
-      <Route path="/admin/analytics" element={<AdminAnalytics />} />
-      <Route path="/demo" element={<DemoPage />} />
-      <Route path="/admin/volunteers" element={<AdminVolunteers />} />
       <Route path="/profile" element={<VolunteerProfile />} />
+      {/* NPO-only routes — volunteers are redirected away */}
+      <Route path="/admin-dashboard" element={<NPOGuard><AdminDashboard /></NPOGuard>} />
+      <Route path="/admin/events" element={<NPOGuard><AdminEvents /></NPOGuard>} />
+      <Route path="/admin/events/new" element={<NPOGuard><AdminEventForm /></NPOGuard>} />
+      <Route path="/admin/events/:id" element={<NPOGuard><AdminEventForm /></NPOGuard>} />
+      <Route path="/admin/events/:id/roster" element={<NPOGuard><AdminEventRoster /></NPOGuard>} />
+      <Route path="/admin/analytics" element={<NPOGuard><AdminAnalytics /></NPOGuard>} />
+      <Route path="/admin/volunteers" element={<NPOGuard><AdminVolunteers /></NPOGuard>} />
+      <Route path="/demo" element={<DemoPage />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
