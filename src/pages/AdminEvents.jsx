@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
-import { Plus, Calendar, Users, Pencil, Trash2, MoreVertical, ClipboardList } from "lucide-react";
+import { Plus, Calendar, Users, Pencil, Trash2, MoreVertical, ClipboardList, RefreshCw, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,8 @@ const statusColors = {
   upcoming: "bg-blue-100 text-blue-700",
   active: "bg-green-100 text-green-700",
   completed: "bg-gray-100 text-gray-700",
-  cancelled: "bg-red-100 text-red-700"
+  cancelled: "bg-red-100 text-red-700",
+  unfilled: "bg-orange-100 text-orange-700"
 };
 
 export default function AdminEvents() {
@@ -51,6 +52,15 @@ export default function AdminEvents() {
     setEvents(prev => prev.map(e => e.id === event.id ? { ...e, status } : e));
   };
 
+  const handleRescan = async (event) => {
+    await base44.functions.invoke('scanVolunteersForEvent', { event_id: event.id });
+    // Refresh events to pick up any status change
+    const evs = await base44.entities.Event.list("-created_date");
+    setEvents(evs);
+  };
+
+  const unfilledEvents = events.filter(e => e.status === "unfilled");
+
   if (loading) return (
     <AppLayout role="admin" user={user}>
       <div className="flex items-center justify-center h-64">
@@ -73,6 +83,21 @@ export default function AdminEvents() {
             </Button>
           </Link>
         </div>
+
+        {/* Unfilled alert */}
+        {unfilledEvents.length > 0 && (
+          <div className="mb-5 bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-orange-800 text-sm">
+                {unfilledEvents.length} unfilled event{unfilledEvents.length !== 1 ? "s" : ""}
+              </p>
+              <p className="text-orange-700 text-xs mt-0.5">
+                No volunteers with matching skills were found. Re-scan after recruiting or use the roster to manually assign volunteers.
+              </p>
+            </div>
+          </div>
+        )}
 
         <Card className="border-border">
           <CardContent className="p-0">
@@ -125,12 +150,22 @@ export default function AdminEvents() {
                               <Pencil className="w-4 h-4 mr-2" /> Edit
                             </DropdownMenuItem>
                           </Link>
+                          {event.status === "unfilled" && (
+                              <DropdownMenuItem onClick={() => handleRescan(event)}>
+                                <RefreshCw className="w-4 h-4 mr-2" /> Re-scan Volunteers
+                              </DropdownMenuItem>
+                            )}
+                          {event.status === "unfilled" && (
+                              <DropdownMenuItem onClick={() => handleStatusChange(event, "upcoming")}>
+                                Mark as Upcoming
+                              </DropdownMenuItem>
+                            )}
                           <DropdownMenuItem onClick={() => handleStatusChange(event, "completed")}>
-                            Mark Completed
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(event, "cancelled")}>
-                            Cancel Event
-                          </DropdownMenuItem>
+                                Mark Completed
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleStatusChange(event, "cancelled")}>
+                                Cancel Event
+                              </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
                             onClick={() => handleDelete(event.id)}

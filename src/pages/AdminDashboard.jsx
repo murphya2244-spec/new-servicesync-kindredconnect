@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
-import { Calendar, Users, Clock, TrendingUp, Plus, ChevronRight, CheckCircle, AlertCircle } from "lucide-react";
+import { Calendar, Users, TrendingUp, Plus, ChevronRight, CheckCircle, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,8 @@ const statusColors = {
   upcoming: "bg-blue-100 text-blue-700",
   active: "bg-green-100 text-green-700",
   completed: "bg-gray-100 text-gray-700",
-  cancelled: "bg-red-100 text-red-700"
+  cancelled: "bg-red-100 text-red-700",
+  unfilled: "bg-orange-100 text-orange-700"
 };
 
 export default function AdminDashboard() {
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
   const totalVolunteers = new Set(signups.map(s => s.volunteer_email)).size;
   const upcomingCount = events.filter(e => e.status === "upcoming").length;
   const confirmedSignups = signups.filter(s => s.status === "confirmed").length;
+  const unfilledEvents = events.filter(e => e.status === "unfilled");
   const recentEvents = events.slice(0, 5);
 
   if (loading) return (
@@ -66,6 +68,31 @@ export default function AdminDashboard() {
             </Button>
           </Link>
         </div>
+
+        {/* Unfilled Events Alert */}
+        {unfilledEvents.length > 0 && (
+          <div className="mb-6 bg-orange-50 border border-orange-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-orange-800 text-sm mb-1">
+                  {unfilledEvents.length} event{unfilledEvents.length !== 1 ? "s" : ""} flagged as unfilled
+                </p>
+                <p className="text-orange-700 text-xs mb-2">No matching volunteers found for the required skills. Consider broadening skill requirements or recruiting new volunteers.</p>
+                <div className="flex flex-wrap gap-2">
+                  {unfilledEvents.map(e => (
+                    <Link key={e.id} to={`/admin/events/${e.id}/roster`}>
+                      <span className="inline-flex items-center gap-1 text-xs bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full border border-orange-200 hover:bg-orange-200 transition-colors cursor-pointer">
+                        {e.title}
+                        <ChevronRight className="w-3 h-3" />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

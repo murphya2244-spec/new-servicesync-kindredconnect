@@ -87,11 +87,12 @@ export default function AdminAnalytics() {
     color: CATEGORY_COLORS[name] || "#e07a3c"
   }));
 
-  // Risk: upcoming events that are understaffed (< 50% capacity filled, within 14 days)
+  // Risk: unfilled events (no matching volunteers) + understaffed (< 50% capacity, within 14 days)
+  const unfilledEvents = events.filter(e => e.status === "unfilled");
   const today = new Date();
   const in14 = new Date(); in14.setDate(today.getDate() + 14);
   const understaffedEvents = events.filter(e => {
-    if (!e.capacity || e.status !== "upcoming") return false;
+    if (!e.capacity || (e.status !== "upcoming" && e.status !== "unfilled")) return false;
     if (!e.date) return false;
     const d = parseISO(e.date);
     if (d < today || d > in14) return false;
@@ -142,6 +143,27 @@ export default function AdminAnalytics() {
             </Card>
           ))}
         </div>
+
+        {/* Unfilled Events Alert */}
+        {unfilledEvents.length > 0 && (
+          <div className="mb-5 bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-orange-800 text-sm mb-1">
+                {unfilledEvents.length} event{unfilledEvents.length !== 1 ? "s" : ""} with no matching volunteers
+              </p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {unfilledEvents.map(e => (
+                  <Link key={e.id} to={`/admin/events/${e.id}/roster`}>
+                    <span className="inline-flex items-center gap-1 text-xs bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full border border-orange-200 hover:bg-orange-200 transition-colors">
+                      {e.title} <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Risk Alerts */}
         {understaffedEvents.length > 0 && (

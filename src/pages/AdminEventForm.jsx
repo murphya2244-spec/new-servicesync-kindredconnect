@@ -66,11 +66,15 @@ export default function AdminEventForm() {
     e.preventDefault();
     setSaving(true);
     const data = { ...form, capacity: form.capacity ? Number(form.capacity) : undefined };
+    let savedId = eventId;
     if (isEdit) {
       await base44.entities.Event.update(eventId, data);
     } else {
-      await base44.entities.Event.create(data);
+      const created = await base44.entities.Event.create(data);
+      savedId = created.id;
     }
+    // Scan volunteer pool for matches, flag as unfilled if needed, notify top matches
+    base44.functions.invoke('scanVolunteersForEvent', { event_id: savedId }).catch(() => {});
     navigate("/admin/events");
   };
 
