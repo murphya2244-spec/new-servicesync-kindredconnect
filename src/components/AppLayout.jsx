@@ -46,12 +46,11 @@ export default function AppLayout({ children, role, user }) {
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Heart className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-fraunces font-semibold text-lg text-foreground hidden sm:block">
-              VolunteerConnect
-            </span>
+            <img
+              src="https://media.base44.com/images/public/69ceb30e963d134a3c9f2147/737bdc6e6_ServiceSync_Logo_4.png"
+              alt="ServiceSync"
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Nav */}
