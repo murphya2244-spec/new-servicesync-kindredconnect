@@ -115,6 +115,93 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* Social Proof */}
+      <div className="border-t border-border bg-card/40">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+
+          {/* Trusted by */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-10"
+          >
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-6">Trusted by volunteer organizations</p>
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
+              {["Red Cross Chapter", "City Food Bank", "Green Earth Alliance", "Hope Shelter", "Youth Futures"].map((org) => (
+                <span key={org} className="text-sm font-semibold text-muted-foreground/60 tracking-wide whitespace-nowrap">{org}</span>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Divider */}
+          <div className="border-t border-border my-12" />
+
+          {/* Testimonials */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-center mb-10"
+          >
+            <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-3">What volunteers say</p>
+            <h2 className="font-fraunces text-2xl md:text-3xl font-semibold text-foreground">
+              Real stories, real impact
+            </h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "VolunteerConnect made it so easy to find events that actually match my schedule. I've logged more hours this year than ever before.",
+                name: "Sarah M.",
+                role: "Community Volunteer",
+                initials: "SM",
+                color: "bg-primary/10 text-primary"
+              },
+              {
+                quote: "The dashboard is beautiful and simple. I signed up for my first event in under a minute — no confusing forms, just heart.",
+                name: "James T.",
+                role: "First-time Volunteer",
+                initials: "JT",
+                color: "bg-accent/10 text-accent"
+              },
+              {
+                quote: "Being able to see my impact over time is incredibly motivating. It keeps me coming back every single weekend.",
+                name: "Priya K.",
+                role: "Weekly Volunteer",
+                initials: "PK",
+                color: "bg-rose-100 text-rose-500"
+              }
+            ].map(({ quote, name, role, initials, color }, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 + i * 0.1 }}
+                className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-4 shadow-sm"
+              >
+                <div className="flex gap-0.5 mb-1">
+                  {[...Array(5)].map((_, s) => (
+                    <svg key={s} className="w-4 h-4 text-primary fill-primary" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  ))}
+                </div>
+                <p className="text-sm text-foreground leading-relaxed italic flex-1">"{quote}"</p>
+                <div className="flex items-center gap-3 pt-2 border-t border-border">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ${color}`}>
+                    {initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground leading-none">{name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{role}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer className="border-t border-border text-center py-8 text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">
