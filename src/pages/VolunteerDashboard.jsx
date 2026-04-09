@@ -28,6 +28,10 @@ export default function VolunteerDashboard() {
   useEffect(() => {
     const load = async () => {
       const me = await base44.auth.me();
+      if (!me) {
+        base44.auth.redirectToLogin();
+        return;
+      }
       setUser(me);
       const [evs, sups] = await Promise.all([
         base44.entities.Event.filter({ status: "upcoming" }, "date", 6),
@@ -89,8 +93,6 @@ export default function VolunteerDashboard() {
             </div>
           );
         })()}
-
-
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-8">
