@@ -78,7 +78,7 @@ export default function Landing() {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            VolunteerConnect brings nonprofits and passionate volunteers together.
+            ServiceSync brings nonprofits and passionate volunteers together.
             Organize events, manage sign-ups, and track impact — all in one warm, welcoming place.
           </motion.p>
 
@@ -330,7 +330,7 @@ export default function Landing() {
       <footer className="border-t border-border text-center py-8 text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">
           <Heart className="w-4 h-4 text-primary" />
-          <span>VolunteerConnect — Made with love for nonprofits</span>
+          <span>ServiceSync — Made with love for nonprofits</span>
         </div>
       </footer>
     </div>
