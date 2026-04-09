@@ -26,10 +26,11 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       const reason = error?.data?.extra_data?.reason || error?.type;
-      if (reason === 'auth_required') {
-        setAuthError({ type: 'auth_required', message: 'Authentication required' });
-      } else if (reason === 'user_not_registered') {
+      if (reason === 'user_not_registered') {
         setAuthError({ type: 'user_not_registered', message: 'User not registered for this app' });
+      } else {
+        // Any other error (401, unknown) = not authenticated, redirect to login
+        setAuthError({ type: 'auth_required', message: 'Authentication required' });
       }
     } finally {
       setIsLoadingAuth(false);

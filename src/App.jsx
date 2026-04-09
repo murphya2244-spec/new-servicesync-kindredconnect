@@ -25,8 +25,12 @@ import DemoPage from './pages/DemoPage';
 import AchievementsPage from './pages/AchievementsPage';
 
 const NPOGuard = ({ children }) => {
-  const { user } = useAuth();
-  if (!user) return null;
+  const { user, isLoadingAuth, navigateToLogin } = useAuth();
+  if (isLoadingAuth) return null;
+  if (!user) {
+    navigateToLogin();
+    return null;
+  }
   if (user.role === "volunteer" || !user.role) {
     return <Navigate to="/volunteer-dashboard" replace />;
   }
