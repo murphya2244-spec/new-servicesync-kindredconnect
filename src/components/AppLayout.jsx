@@ -47,7 +47,7 @@ export default function AppLayout({ children, role, user }) {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="https://media.base44.com/images/public/69ceb30e963d134a3c9f2147/737bdc6e6_ServiceSync_Logo_4.png"
+              src="https://media.base44.com/images/public/69ceb30e963d134a3c9f2147/2f59a1456_ServiceSync_Logo_8.png"
               alt="ServiceSync"
               className="h-8 w-auto"
             />

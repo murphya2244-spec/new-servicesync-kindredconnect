@@ -58,7 +58,7 @@ export default function Landing() {
             className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-7 border border-primary/20"
           >
             <Handshake className="w-4 h-4" />
-            Volunteer Management for Nonprofits
+            Volunteer Management, Simplified
           </motion.div>
 
           <motion.h1
@@ -67,9 +67,9 @@ export default function Landing() {
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="text-5xl md:text-7xl font-fraunces font-semibold text-foreground leading-[1.1] mb-7 tracking-tight"
           >
-            Connect Hearts,
+            Sync Your
             <br />
-            <span className="text-primary">Build Community</span>
+            <span className="text-secondary">Service Network</span>
           </motion.h1>
 
           <motion.p
@@ -78,7 +78,7 @@ export default function Landing() {
             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            ServiceSync brings nonprofits and passionate volunteers together.
+            ServiceSync connects nonprofits and passionate volunteers seamlessly.
             Organize events, manage sign-ups, and track impact — all in one warm, welcoming place.
           </motion.p>
 
@@ -127,7 +127,7 @@ export default function Landing() {
           <h2 className="font-fraunces text-3xl md:text-5xl font-semibold text-foreground leading-tight">
             Everything you need to make
             <br className="hidden md:block" />
-            <span className="text-primary"> a lasting difference</span>
+            <span className="text-secondary"> a lasting difference</span>
           </h2>
         </InView>
 
@@ -330,7 +330,7 @@ export default function Landing() {
       <footer className="border-t border-border text-center py-8 text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">
           <Heart className="w-4 h-4 text-primary" />
-          <span>ServiceSync — Made with love for nonprofits</span>
+          <span>ServiceSync — Connecting communities through service</span>
         </div>
       </footer>
     </div>
