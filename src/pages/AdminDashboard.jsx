@@ -30,6 +30,16 @@ export default function AdminDashboard() {
         return;
       }
       setUser(me);
+      const [evs, sups] = await Promise.all([
+        base44.entities.Event.list("-created_date", 20),
+        base44.entities.Signup.list("-created_date", 100)
+      ]);
+      setEvents(evs);
+      setSignups(sups);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const totalVolunteers = new Set(signups.map(s => s.volunteer_email)).size;
   const upcomingCount = events.filter(e => e.status === "upcoming").length;
